@@ -1,74 +1,87 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
-
-// Bellman Ford Algorithm
-// Time Complexity: O(N*M)
-// Space Complexity: O(N)
-// N: Number of nodes
-// M: Number of edges
-vector<int> bellmanFord(int n, int src, vector<vector<int>>edges){
-    vector<int>dist(n,INT_MAX);
-    vector<int>parent(n,-1);
-
-    parent[src]=-1;
-    dist[src]=0;
-    for(int i=0;i<n-1;i++){
-        for(auto edge:edges){
-            int u=edge[0];
-            int v=edge[1];
-            int w=edge[2];
-            if(dist[u]!=INT_MAX && dist[u]+w<dist[v]){
-                dist[v]=dist[u]+w;
-                parent[v]=u;
-            }
+void dfs(int node,vector<vector<pair<int,int>>> &adj, vector<int> &dist, vector<bool> &vis,vector<int> &parent)
+{
+    vis[node] = true;
+    for (auto it : adj[node])
+    {
+        if (!vis[it.first])
+        {
+            dist[it.first] =it.second+dist[node];
+            parent[it.first]=node;
+            dfs(it.first, adj, dist, vis,parent);
         }
     }
+}
 
-    for(auto edge:edges){
+int main()
+{
+
+    int m, n;
+    cin >> n >> m;
+    vector<vector<pair<int, int>>> adj(n);
+    vector<vector<int>>edges;
+    for (int i = 0; i < m; i++)
+    {
+        int u, v, wt;
+        cin >> u >> v >> wt;
+        adj[u].push_back({v, wt});
+        edges.push_back({u,v,wt});
+    }
+    vector<int> dist(n, INT_MAX);
+    vector<bool> vis(n, false);
+    vector<int> parent(n,-1);
+    dist[0] = 0;
+    dfs(0, adj, dist, vis,parent);
+
+    for (int i = 0; i < n; i++)
+    {
+        cout << dist[i] << " ";
+    }
+    cout << endl;
+    int start=-1;
+    for(auto edge:edges)
+    {
         int u=edge[0];
         int v=edge[1];
-        int w=edge[2];
-        if(dist[u]!=INT_MAX && dist[u]+w<dist[v]){
-            cout<<"Negative Cycle";
-            return dist;
+        int wt=edge[2];
+        if(dist[u]+wt<dist[v])
+        {
+            cout<<"Negative cycle found"<<endl;
+            parent[v]=u;
+            start=v;
+            break;
         }
     }
-
-    // parent
-    cout<<"Parent: "<<endl;
-
-    for(int i=0;i<n;i++){
-        if(parent[i]!=-1){
-            cout<<i<<" "<<parent[i]<<endl;
+    if(start==-1)
+    {
+        cout<<"No negative cycle found"<<endl;
+    }
+    else
+    {
+        cout<<"Parent array:: "<<endl;
+        for(int i=0;i<n;i++)
+        {
+            cout<<parent[i]<<" ";
         }
-        else cout<<i<<" -1"<<endl;
+        cout<<endl;
+
+    cout<<"Negative cycle:: "<<endl;
+    int mainStart=start;
+    do {
+        cout<<start<<" ";
+        start=parent[start];
+    } while (start!=mainStart);
     }
-    return dist;
+
 }
 
-int main(){
-    int m,n;
-    cin>>n>>m;
-    vector<vector<int>>edges;
-    for(int i=0;i<m;i++){
-        int u,v,w;
-        cin>>u>>v>>w;
-        u--;
-        v--;
+/*
+5 5 
+0 1 3
+1 3 -4
+3 2 7
+2 1 3
+2 4 8
 
-        edges.push_back({u,v,w});
-        edges.push_back({v,u,w});
-    }
-    cout<<"Enter Source: ";
-    int src;
-    cin>>src;
-    src--;
-    vector<int>dist=bellmanFord(n,src,edges);
-    cout<<"Distance: "<<endl;
-
-    for(int i=0;i<n;i++){
-        cout<<i<<" "<<dist[i]<<endl;
-    }
-    return 0;
-
-}
+*/
