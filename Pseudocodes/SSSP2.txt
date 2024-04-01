@@ -1,0 +1,28 @@
+// Function to perform Dijkstra's algorithm to find the shortest path distances from a source node
+function SSSP_Dijkstra(graph, source):
+    n = number of nodes in the graph
+    dist = [INFINITY, INFINITY, ..., INFINITY] // Array of size n to store distances
+    dist[source] = 0
+    priority_queue = create an empty priority queue
+    priority_queue.push(source, 0)
+
+    while priority_queue is not empty:
+        u = priority_queue.pop()
+        for each neighbor v of u:
+            alt = dist[u] + weight(u, v)
+            if alt < dist[v]:
+                dist[v] = alt
+                priority_queue.push(v, alt)
+
+    return dist
+
+// Main function
+function main():
+    dist = SSSP_Dijkstra(graph, 0) // Assuming node indices start from 0
+
+    ans = 0
+    for each train route (u, v):
+        if dist[u] <= v:
+            ans = ans + 1
+
+    output ans
